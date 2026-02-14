@@ -4,6 +4,8 @@ import ValentinePage from "@/models/valentinePage";
 import { nanoid } from "nanoid";
 import { rateLimiter } from "@/lib/rateLimiter";
 
+export const dynamic = "force-dynamic";
+
 // POST /api/pages — Create a new valentine page
 export async function POST(request: NextRequest) {
     try {
@@ -53,10 +55,11 @@ export async function POST(request: NextRequest) {
             shareLink: `/to/${pageId}`,
             inboxLink: `/inbox/${pageId}?key=${secretKey}`,
         });
-    } catch (error) {
-        console.error("Error creating page:", error);
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Unknown error";
+        console.error("Error creating page:", message);
         return NextResponse.json(
-            { error: "Failed to create page" },
+            { error: `Failed to create page: ${message}` },
             { status: 500 }
         );
     }
